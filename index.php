@@ -1,5 +1,8 @@
 <?php
 require_once 'Post.php';
+require_once 'BlogReader.php';
+
+
 
 $post1 = new Post();
 $post1->id = 1;
@@ -39,17 +42,39 @@ $post5->author = "Mohamed";
 $post5->published = true;
 
 $posts = [$post1, $post2, $post3, $post4, $post5];
+$reader = new BlogReader($posts);
+
+
 
 echo "------All Posts----- \n";
-foreach ($posts as $post) {
+foreach ($reader->listAll() as $post) {
     echo "{$post->title} \n";
 }
 echo "\n";
 
 echo "------Published Posts----- \n";
 
-foreach ($posts as $post) {
+foreach ($reader->listPublished() as $post) {
     if ($post->published) {
         echo "{$post->title}" . " by " . "{$post->author}" . "\n";
     }
+}
+
+echo "\n";
+echo "------Find By ID----- \n";
+
+$id = 1;
+$foundPost = $reader->findById($id);
+if ($foundPost !== null) {
+    echo "Post #{$id}: {$foundPost->title} by {$foundPost->author}\n";
+} else {
+    echo "Post #{$id} not found\n";
+}
+
+$id = 99;
+$foundPost = $reader->findById($id);
+if ($foundPost !== null) {
+    echo "Post #{$id}: {$foundPost->title} by {$foundPost->author}\n";
+} else {
+    echo "Post #{$id} not found\n";
 }
