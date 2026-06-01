@@ -27,6 +27,10 @@ $post3->author = "Gamal";
 $post3->published = false;
 
 
+$posts = [$post1, $post2, $post3];
+$reader = new BlogReader($posts);
+
+echo "------Create New Post----- \n";
 $post4 = new Post();
 $post4->id = 4;
 $post4->title = "C#";
@@ -34,19 +38,35 @@ $post4->body = "Learn C#";
 $post4->author = "Ahmed";
 $post4->published = false;
 
-$post5 = new Post();
-$post5->id = 5;
-$post5->title = "JAVA";
-$post5->body = "Learn JAVA";
-$post5->author = "Mohamed";
-$post5->published = true;
-
-$posts = [$post1, $post2, $post3, $post4, $post5];
-$reader = new BlogReader($posts);
+$reader->create($post4);
+echo "Total count after create: " . count($reader->listAll()) . "\n\n";
 
 
+echo "------Update Post----- \n";
+$id = 1;
+$updatedPost = $reader->update($id, ['title' => "Updated Title"]);
+if ($updatedPost !== null) {
+    echo "New Title: " . $reader->findById($id)->title . "\n\n";
+}
 
-echo "------All Posts----- \n";
+echo "------Delete Post----- \n";
+$reader->delete(2);
+echo "Remaining count after delete: " . count($reader->listAll()) . "\n\n";
+
+
+echo "------ Find Post After Deleting ------\n";
+$id = 2;
+$foundPost = $reader->findById($id);
+if ($foundPost !== null) {
+    echo "Post #{$id}: {$foundPost->title} by {$foundPost->author}\n";
+} else {
+    echo "Post #{$id} not found\n";
+}
+
+foreach ($reader->listAll() as $post) {
+    echo "{$post->title} \n";
+}
+/* 
 foreach ($reader->listAll() as $post) {
     echo "{$post->title} \n";
 }
@@ -78,3 +98,4 @@ if ($foundPost !== null) {
 } else {
     echo "Post #{$id} not found\n";
 }
+ */
