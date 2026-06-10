@@ -1,0 +1,73 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table authors {
+  id integer [primary key]
+  name varchar
+  email varchar [unique]
+  created_at timestamp
+
+    Indexes {
+ 
+      email [name: 'idx_authors_email']
+  }
+  
+}
+
+Table categories {
+  id integer [primary key]
+  name varchar
+}
+
+Table posts {
+  id integer [primary key]
+  title varchar
+  body text
+  published bool
+  author_id integer
+  category_id integer
+  created_at timestamp
+
+  Indexes {
+    author_id [name: 'idx_posts_author']
+    category_id [name: 'idx_posts_category']
+    (author_id, published) [name: 'idx_posts_author_published']
+  }
+}
+
+Table comments {
+  id integer [primary key]
+  author_id integer
+  post_id integer
+  body text
+  created_at timestamp
+
+  Indexes {
+    post_id [name: 'idx_comments_post']
+    author_id [name: 'idx_comments_author']
+  }
+}
+
+Table tags {
+  id integer [primary key]
+  name varchar
+}
+
+Table post_tag {
+  post_id integer
+  tag_id integer
+
+    Indexes {
+    (post_id, tag_id) [pk]
+  }
+}
+
+Ref: posts.author_id > authors.id // many-to-one
+Ref: posts.category_id > categories.id // many-to-one
+Ref: comments.author_id > authors.id // many-to-one
+Ref: comments.post_id > posts.id
+
+// many-to-many
+Ref: post_tag.post_id > posts.id
+Ref: post_tag.tag_id > tags.id
+
