@@ -13,9 +13,9 @@ class PostController extends Controller
         return response()->json(['message' => 'ok']);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(Post $post): JsonResponse
     {
-        return response()->json(['message' => 'ok']);
+        return response()->json($post);
     }
 
     public function store(Request $request): JsonResponse
