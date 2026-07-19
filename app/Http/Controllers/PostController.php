@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\Post;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
+
 class PostController extends Controller
 {
     public function index(Request $request): JsonResponse
@@ -28,15 +31,15 @@ class PostController extends Controller
         return response()->json($post, 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StorePostRequest $request): JsonResponse
     {
-        $post = Post::create($request);
+        $post = Post::create($request->validated());
         return response()->json($post, 201);
     }
 
-    public function update(Request $request, Post $post): JsonResponse
+    public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
-        $post->update($request);
+        $post->update($request->validated());
         return response()->json($post, 200);
     }
 
