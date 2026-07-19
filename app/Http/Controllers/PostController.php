@@ -10,9 +10,12 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 
+use App\Http\Resources\PostResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 class PostController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $posts = Post::query()
             ->when($request->category_id, function ($query, $categoryId) {
@@ -23,24 +26,25 @@ class PostController extends Controller
             })
             ->paginate(15);
 
-        return response()->json($posts, 200);
+        return PostResource::collection($posts);
     }
 
-    public function show(Post $post): JsonResponse
+    public function show(Post $post): PostResource
     {
-        return response()->json($post, 200);
+        $post->load(['category', 'author']);
+        return new PostResource($post);
     }
 
-    public function store(StorePostRequest $request): JsonResponse
+    public function store(StorePostRequest $request): PostResource
     {
         $post = Post::create($request->validated());
-        return response()->json($post, 201);
+        return new PostResource($post);
     }
 
-    public function update(UpdatePostRequest $request, Post $post): JsonResponse
+    public function update(UpdatePostRequest $request, Post $post): PostResource
     {
         $post->update($request->validated());
-        return response()->json($post, 200);
+        return new PostResource($post);
     }
 
     public function destroy(Post $post): JsonResponse
