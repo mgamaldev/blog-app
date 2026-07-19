@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+   /*      public function getRouteKeyName(): string
+    {
+        return 'slug'; // Replace with your column name, e.g., 'uuid', 'username'
+    } */
 }

@@ -5,31 +5,44 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\Post;
 
 class PostController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json(['message' => 'ok']);
+        $posts = Post::query()
+            ->when($request->category_id, function ($query, $categoryId) {
+                return $query->where('category_id', $categoryId);
+            })
+            ->when($request->author_id, function ($query, $authorId) {
+                return $query->where('author_id', $authorId);
+            })
+            ->paginate(15);
+
+        return response()->json($posts, 200);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(Post $post): JsonResponse
     {
-        return response()->json(['message' => 'ok']);
+        return response()->json($post, 200);
     }
 
     public function store(Request $request): JsonResponse
     {
-        return response()->json(['message' => 'ok']);
+        $post = Post::create($request);
+        return response()->json($post, 201);
     }
 
-    public function update(Request $request, string $id): JsonResponse
+    public function update(Request $request, Post $post): JsonResponse
     {
-        return response()->json(['message' => 'ok']);
+        $post->update($request);
+        return response()->json($post, 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(Post $post): JsonResponse
     {
-        return response()->json(['message' => 'ok']);
+        $post->delete();
+        return response()->json(null, 204);
     }
 }
