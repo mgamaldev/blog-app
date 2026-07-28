@@ -43,12 +43,14 @@ class PostController extends Controller
 
     public function update(UpdatePostRequest $request, Post $post): PostResource
     {
+        $this->authorize('update', $post);
         $post->update($request->validated());
         return new PostResource($post);
     }
 
     public function destroy(Post $post): JsonResponse
     {
+        $this->authorize('delete', $post);
         $post->delete();
         return response()->json(null, 204);
     }
