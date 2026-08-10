@@ -37,7 +37,9 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request): PostResource
     {
-        $post = Post::create($request->validated());
+        $validated = $request->validated();
+        $validated['author_id'] = $request->user()->id;
+        $post = Post::create($validated);
         return new PostResource($post);
     }
 
