@@ -11,10 +11,17 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 
 use App\Http\Resources\PostResource;
+use App\Services\PostService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PostController extends Controller
 {
+    protected PostService $postService;
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $posts = Post::query()
@@ -38,15 +45,22 @@ class PostController extends Controller
     public function store(StorePostRequest $request): PostResource
     {
         $validated = $request->validated();
-        $validated['author_id'] = $request->user()->id;
-        $post = Post::create($validated);
+        if ($request->has('tags')) {
+            $validated['tags'] = $request->input('tags');
+        }
+        $post = $this->postService->create($validated, $request->user());
         return new PostResource($post);
     }
 
     public function update(UpdatePostRequest $request, Post $post): PostResource
     {
         $this->authorize('update', $post);
-        $post->update($request->validated());
+        $validated = $request->validated();
+        if ($request->has('tags')) {
+            $validated['tags'] = $request->input('tags');
+        }
+
+        $updatedPost = $this->postService->update($post, $validated);
         return new PostResource($post);
     }
 
